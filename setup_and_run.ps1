@@ -251,6 +251,33 @@ os.makedirs(OUTDIR, exist_ok=True)
 DEFAULT_VAE_PATH = str(ROOT / "models" / "vae" / "ae.safetensors")
 DEFAULT_LLM_PATH = str(ROOT / "models" / "llm" / "Qwen3-4B-Instruct-2507-Q4_K_M.gguf")
 
+FIRST_RUN = True
+
+RES_PRESETS = [
+    ("1:1 (256x256)", 256, 256),
+    ("1:1 (512x512)", 512, 512),
+    ("1:1 (768x768)", 768, 768),
+    ("1:1 (1024x1024)", 1024, 1024),
+    ("16:9 (640x384)", 640, 384),
+    ("16:9 (896x512)", 896, 512),
+    ("16:9 (1024x576)", 1024, 576),
+    ("9:16 (384x640)", 384, 640),
+    ("9:16 (512x896)", 512, 896),
+    ("9:16 (576x1024)", 576, 1024),
+    ("4:3 (640x480)", 640, 480),
+    ("4:3 (768x576)", 768, 576),
+    ("3:2 (768x512)", 768, 512),
+    ("2:3 (512x768)", 512, 768),
+]
+
+SIZE_OPTIONS = sorted({s for _, w, h in RES_PRESETS for s in (w, h)})
+
+def apply_preset(preset_label):
+    for name, w, h in RES_PRESETS:
+        if name == preset_label:
+            return w, h
+    return gr.update(), gr.update()
+
 def gen_image(prompt, width, height, steps, seed, cfg_scale, vae_path, llm_path):
     uid = uuid.uuid4().hex[:8]
     out_file = os.path.join(OUTDIR, f"out_{uid}.png")
@@ -310,29 +337,53 @@ def gen_image(prompt, width, height, steps, seed, cfg_scale, vae_path, llm_path)
 
 with gr.Blocks() as demo:
     gr.Markdown("# Z-Image Turbo - Minimal UI")
-    with gr.Row():
-        prompt = gr.Textbox(label="Prompt", value="A large orange octopus on an ocean floor, cinematic, 8k")
-    with gr.Row():
-        width = gr.Dropdown([256, 384, 512, 640], value=512, label="Width")
-        height = gr.Dropdown([256, 384, 512, 640], value=512, label="Height")
-        steps = gr.Slider(1, 50, value=20, step=1, label="Steps")
-        cfg_scale = gr.Slider(0.0, 10.0, value=1.0, step=0.1, label="CFG Scale")
-        seed = gr.Number(value=0, label="Seed (0 = random)")
-    with gr.Row():
-        vae_path = gr.Textbox(label="VAE path", value=DEFAULT_VAE_PATH)
-        llm_path = gr.Textbox(label="LLM (Qwen) path", value=DEFAULT_LLM_PATH)
+    with gr.Tabs():
+        with gr.Tab("Basic"):
+            with gr.Row():
+                prompt = gr.Textbox(label="Prompt", value="A large orange octopus on an ocean floor, cinematic, 8k")
+            with gr.Row():
+                preset = gr.Dropdown([n for n, _, _ in RES_PRESETS], value="1:1 (512x512)", label="Resolution / Aspect ratio")
+            with gr.Row():
+                width = gr.Dropdown(SIZE_OPTIONS, value=512, label="Width")
+                height = gr.Dropdown(SIZE_OPTIONS, value=512, label="Height")
+                steps = gr.Slider(1, 50, value=8, step=1, label="Steps")
+            with gr.Row():
+                cfg_scale = gr.Slider(0.0, 10.0, value=1.0, step=0.1, label="CFG Scale")
+                seed = gr.Number(value=0, label="Seed (0 = random)")
+            gr.Markdown("High resolutions (like 1024x1024) use more VRAM and take longer.")
+
+        with gr.Tab("Advanced"):
+            unlock = gr.Checkbox(value=False, label="Allow editing advanced paths")
+            with gr.Row():
+                vae_path = gr.Textbox(label="VAE path", value=DEFAULT_VAE_PATH, interactive=False)
+                llm_path = gr.Textbox(label="LLM (Qwen) path", value=DEFAULT_LLM_PATH, interactive=False)
+
+            def set_unlocked(enabled):
+                return gr.update(interactive=bool(enabled)), gr.update(interactive=bool(enabled))
+
+            unlock.change(set_unlocked, inputs=[unlock], outputs=[vae_path, llm_path])
+
+    preset.change(apply_preset, inputs=[preset], outputs=[width, height])
+
     with gr.Row():
         btn = gr.Button("Generate")
     img = gr.Image(label="Result")
     status = gr.Textbox(label="Status", interactive=False, lines=12)
+
     def run_and_return(p, w, h, st, sd, cfg, vae, llm):
-        yield None, "Generating... (keep this window open; first run can take time)"
+        global FIRST_RUN
+        if FIRST_RUN:
+            FIRST_RUN = False
+            yield None, "Generating... (first run can take longer due to model loading)", gr.update(interactive=False)
+        else:
+            yield None, "Generating...", gr.update(interactive=False)
         out, log = gen_image(p, int(w), int(h), int(st), int(sd), float(cfg), vae, llm)
         if out:
-            yield out, log if log else "Done"
+            yield out, log if log else "Done", gr.update(interactive=True)
             return
-        yield None, log if log else "Failed"
-    btn.click(run_and_return, inputs=[prompt, width, height, steps, seed, cfg_scale, vae_path, llm_path], outputs=[img, status])
+        yield None, log if log else "Failed", gr.update(interactive=True)
+
+    btn.click(run_and_return, inputs=[prompt, width, height, steps, seed, cfg_scale, vae_path, llm_path], outputs=[img, status, btn])
 
 demo.launch(server_name="127.0.0.1", server_port=9000, share=False)
 '@

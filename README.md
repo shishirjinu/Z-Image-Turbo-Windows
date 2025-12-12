@@ -1,102 +1,115 @@
-# Z-Image Turbo — One-Click Windows Installer (4GB / 6–8GB / 10GB+ VRAM)
+# Z-Image Turbo - One-Click Windows Installer (Low VRAM)
 
-This package gives you a **clean, minimal, safe Windows setup** to run **Z-Image Turbo (GGUF)** locally using a lightweight **Gradio Web UI**, without requiring complicated tools like ComfyUI or Wan2GP.
+A beginner-friendly Windows package to run **Z-Image Turbo (GGUF)** locally with a simple **Gradio Web UI**.
 
-It is built for **low-VRAM GPUs** (even 4GB cards) and uses **quantized GGUF models** for maximum compatibility.
+Target users:
 
----
+- Low-VRAM NVIDIA GPUs (including 4GB)
+- Anyone who wants free local image generation without complex tools
 
-# ⭐ Features
+## Features
 
-- ✔ One-Click installer (`start_zimage.bat`)
-- ✔ Automatic Python venv creation  
-- ✔ Automatic GGUF model download  
-- ✔ Choose VRAM tier visually (4GB / 6–8GB / 10GB+)  
-- ✔ Minimal web UI (Prompt → Image)  
-- ✔ Safe: **no unknown EXE automatically downloaded**
-- ✔ Uses the secure and trusted **stable-diffusion.cpp** backend  
-- ✔ Runs locally at **http://127.0.0.1:9000**
+- One-click installer: `start_zimage.bat`
+- Creates an isolated Python `venv` automatically
+- Downloads required model weights (GGUF) automatically
+- Minimal, safe UI (Prompt -> Image)
+- Safety-first: does **not** auto-download executables (`.exe`)
 
----
+## Quickstart
 
-# ⚠ Why do you need to provide `sd.exe` manually?
+1. Download / clone this repo.
+2. Put `sd.exe` in `sd_bin\` (see instructions below).
+3. Double-click `start_zimage.bat`.
+4. Open the UI:
+   - http://127.0.0.1:9000
 
-This installer **will never download executable (.exe) files from the internet automatically** for safety reasons.
+## Requirements
 
-`sd.exe` is the Windows binary for **stable-diffusion.cpp** — a trusted open-source GPU/CPU inference engine.  
-You must manually download a version you trust and place it in:
+- Windows 10/11 (64-bit)
+- Python 3.10+
+- Microsoft Visual C++ Redistributable 2015-2022 (x64)
+- NVIDIA GPU users (optional)
+  - Latest NVIDIA driver recommended
 
-`ZImage-Windows\sd_bin\sd.exe`
+## Running the setup
 
----
+Double-click:
 
-# ✅ Where to get `sd.exe` (Windows)
+- `start_zimage.bat`
 
-Go to the **stable-diffusion.cpp Releases** page and download a Windows ZIP that contains the `sd.exe` binary.
+The installer will:
 
-From the release assets list, pick one of these (names may include the commit/hash):
+- Create a Python virtual environment (`venv\`)
+- Ask you to choose a VRAM tier (4GB / 6-8GB / 10GB+)
+- Download the required weights
+- Launch the Gradio UI at http://127.0.0.1:9000
 
-- **NVIDIA (recommended)**: `sd-...-bin-win-cuda12-x64.zip`
-- **CPU only**: `sd-...-bin-win-x64.zip`
+Keep the terminal window open while it downloads models.
 
-After downloading:
+## Why `sd.exe` is manual
+
+This project **will never download executable (.exe) files automatically**.
+
+`sd.exe` is the Windows binary for **stable-diffusion.cpp** (the inference backend). You download it yourself so you can choose which release/build you trust.
+
+## Where to get `sd.exe` (Windows)
+
+Download a Windows build from the **stable-diffusion.cpp Releases** page.
+
+Recommended assets (names include a commit/hash):
+
+- NVIDIA (recommended): `sd-...-bin-win-cuda12-x64.zip`
+- CPU only: `sd-...-bin-win-x64.zip`
+
+Install steps:
 
 1. Extract the ZIP.
-2. Find `sd.exe` inside the extracted folder.
-3. Copy `sd.exe` into:
-
-`ZImage-Windows\sd_bin\sd.exe`
+2. Copy `sd.exe` to:
+   - `sd_bin\sd.exe`
+3. Copy any `*.dll` files from the ZIP into the same folder:
+   - `sd_bin\`
 
 Important:
 
-- If the ZIP also contains `.dll` files, copy them into the **same** `sd_bin` folder next to `sd.exe`.
-- Some stable-diffusion.cpp releases provide DLLs as a separate download. If your ZIP only has `sd.exe` but you still get a crash, download the matching DLL package for the same release and copy all DLLs next to `sd.exe`.
-- If Windows shows errors like `VCRUNTIME140.dll missing`, install **Microsoft Visual C++ Redistributable 2015-2022 (x64)** and try again.
+- Some releases provide DLLs as a separate asset. If your ZIP contains only `sd.exe`, download the matching DLL package for the same release and copy all DLLs next to `sd.exe`.
 
----
+## What the installer downloads (and what is manual)
 
-# Requirements (for beginners)
-
-- **Windows 10/11 (64-bit)**
-- **Python 3.10+** (the installer creates an isolated venv automatically)
-- **Microsoft Visual C++ Redistributable 2015-2022 (x64)**
-- **NVIDIA GPU users (optional)**
-  - Install the latest NVIDIA driver
-  - Use the `win-cuda...` build of `sd.exe` (recommended)
-
-# Troubleshooting
-
-If generation fails or `sd.exe` crashes:
-
-- **Make sure you copied DLLs**
-  - When you extract the stable-diffusion.cpp release ZIP, copy **`sd.exe` and any `.dll` files next to it** into `sd_bin\`
-- **Try the CPU build to confirm your setup**
-  - Download `sd-...-bin-win-x64.zip` (CPU-only) and test with that first
-  - If CPU works but CUDA fails, it is usually a driver/CUDA compatibility issue
-- **Common crash code**
-  - `3221225781` (`0xC0000135`) usually means **missing DLL / runtime dependency**
-
----
-
-# What the installer downloads automatically
-
-The one-click setup will automatically download these **model files** (safe, non-executable):
+Automatic (safe, non-executable downloads):
 
 - Z-Image Turbo GGUF (diffusion model)
 - Qwen GGUF (LLM/text encoder)
 
-Only `sd.exe` is **manual**.
+Manual:
 
-Note: The VAE file (`ae.safetensors`) may require a Hugging Face login to download, so the installer will ask you to download it manually.
+- `sd.exe` (+ DLLs)
+- VAE: `models\vae\ae.safetensors`
+  - This file may require a Hugging Face login, so the installer asks you to download it manually.
 
-If any automatic download fails (network restrictions, Hugging Face blocked), you can download manually and place files here:
+Manual download sources:
 
-- `models\zimage\` (Z-Image Turbo GGUF)
-  - Source: https://huggingface.co/leejet/Z-Image-Turbo-GGUF/tree/main
-- `models\vae\ae.safetensors`
-  - Source: https://huggingface.co/black-forest-labs/FLUX.1-schnell/tree/main
-- `models\llm\Qwen3-4B-Instruct-2507-Q4_K_M.gguf`
-  - Source: https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/tree/main
+- Z-Image Turbo GGUF:
+  - https://huggingface.co/leejet/Z-Image-Turbo-GGUF/tree/main
+- VAE (`ae.safetensors`):
+  - https://huggingface.co/black-forest-labs/FLUX.1-schnell/tree/main
+- Qwen GGUF:
+  - https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/tree/main
 
-During large downloads (GB-sized GGUF files), the installer shows a progress indicator in the terminal. Please keep the window open until it finishes.
+## Troubleshooting
+
+If generation fails or `sd.exe` crashes:
+
+- Make sure you copied all DLLs next to `sd.exe`.
+- Install Microsoft Visual C++ Redistributable 2015-2022 (x64).
+- If the CUDA build fails, try the CPU build to confirm everything else works.
+- Common crash code:
+  - `3221225781` (`0xC0000135`) typically means a missing DLL/runtime dependency.
+
+## Credits / Upstream
+
+This project is a Windows-friendly wrapper around the excellent **stable-diffusion.cpp** backend:
+
+- https://github.com/leejet/stable-diffusion.cpp
+
+Z-Image weights and related resources are hosted on Hugging Face by their respective authors.
 
