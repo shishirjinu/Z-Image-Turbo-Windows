@@ -17,30 +17,71 @@ function Download-FileWithProgress {
         [Parameter(Mandatory=$true)][string]$Label
     )
 
+    try {
+        # Hugging Face downloads can fail on older TLS defaults
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    } catch {
+        # ignore
+    }
+
     $dir = Split-Path -Parent $Destination
     if (!(Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
 
-    $wc = New-Object System.Net.WebClient
-    $wc.Proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
+    try {
+        $curlCmd = Get-Command curl.exe -ErrorAction SilentlyContinue
+        if ($curlCmd -and $curlCmd.Source) {
+            $curl = $curlCmd.Source
+            Write-Host ("{0} - downloading via curl (with resume/retry)..." -f $Label)
 
-    $completed = $false
-    $lastPercent = -1
-    $wc.DownloadProgressChanged += {
-        param($sender, $e)
-        if ($e.ProgressPercentage -ne $lastPercent) {
-            $lastPercent = $e.ProgressPercentage
-            Write-Progress -Activity $Label -Status ("{0}% ({1} MB / {2} MB)" -f $e.ProgressPercentage, [math]::Round($e.BytesReceived/1MB,2), [math]::Round($e.TotalBytesToReceive/1MB,2)) -PercentComplete $e.ProgressPercentage
+            $args = @(
+                '--location',
+                '--fail',
+                '--retry', '10',
+                '--retry-delay', '5',
+                '--retry-all-errors',
+                '--connect-timeout', '30',
+                '--speed-time', '30',
+                '--speed-limit', '10240',
+                '--progress-bar',
+                '--header', 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                '--header', 'Accept: */*'
+            )
+
+            if (Test-Path $Destination) {
+                $args += @('--continue-at', '-')
+            }
+
+            $args += @('--output', $Destination, $Url)
+
+            & $curl @args
+            if ($LASTEXITCODE -ne 0) {
+                throw "curl failed with exit code $LASTEXITCODE"
+            }
+            return
         }
-    }
-    $wc.DownloadFileCompleted += {
-        $script:completed = $true
-        Write-Progress -Activity $Label -Completed
+    } catch {
+        Write-Host "`nPrimary download method (curl) failed. Falling back..."
+        Write-Host ("Reason: {0}" -f $_.Exception.Message)
     }
 
-    $script:completed = $false
-    $wc.DownloadFileAsync($Url, $Destination)
-    while (-not $script:completed) {
-        Start-Sleep -Milliseconds 200
+    try {
+        Write-Host ("{0} - downloading via Invoke-WebRequest (fallback)..." -f $Label)
+        $headers = @{
+            'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            'Accept' = '*/*'
+        }
+        Invoke-WebRequest -Uri $Url -OutFile $Destination -Headers $headers -MaximumRedirection 10 -ProxyUseDefaultCredentials
+        return
+    } catch {
+        $msg = $_.Exception.Message
+        try {
+            if ($_.Exception.Response -and $_.Exception.Response.StatusCode) {
+                $msg = "HTTP {0} - {1}" -f [int]$_.Exception.Response.StatusCode, $_.Exception.Response.StatusDescription
+            }
+        } catch {
+            # ignore
+        }
+        throw $msg
     }
 }
 

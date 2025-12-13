@@ -105,6 +105,12 @@ If generation fails or `sd.exe` crashes:
 - Common crash code:
   - `3221225781` (`0xC0000135`) typically means a missing DLL/runtime dependency.
 
+If model downloads fail in the installer but the same URL works in your browser:
+
+- Your network (proxy/firewall/antivirus) may block programmatic downloads from Hugging Face/CDN.
+- The installer prefers `curl.exe` (resume + retries + progress bar). If that is unavailable, it falls back to `Invoke-WebRequest`.
+- If it still fails, use the manual download links above and place the files into the indicated `models\...` folders.
+
 ## Credits / Upstream
 
 This project is a Windows-friendly wrapper around the excellent **stable-diffusion.cpp** backend:
